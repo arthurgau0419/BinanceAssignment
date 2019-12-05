@@ -1,0 +1,45 @@
+PODS:
+  - Alamofire (5.0.0-rc.3)
+  - DropDown (2.3.13)
+  - Moya/Core (14.0.0-beta.5):
+    - Alamofire (= 5.0.0-rc.3)
+  - Moya/RxSwift (14.0.0-beta.5):
+    - Moya/Core
+    - RxSwift (~> 5.0)
+  - RxCocoa (5.0.1):
+    - RxRelay (~> 5)
+    - RxSwift (~> 5)
+  - RxRelay (5.0.1):
+    - RxSwift (~> 5)
+  - RxSwift (5.0.1)
+  - Starscream (3.1.1)
+
+DEPENDENCIES:
+  - DropDown
+  - Moya/RxSwift (~> 14.0.0-beta)
+  - RxCocoa
+  - RxSwift
+  - Starscream
+
+SPEC REPOS:
+  https://github.com/CocoaPods/Specs.git:
+    - Alamofire
+    - DropDown
+    - Moya
+    - RxCocoa
+    - RxRelay
+    - RxSwift
+    - Starscream
+
+SPEC CHECKSUMS:
+  Alamofire: ca8c0de6906873be89d6deec5c8de279e00bf872
+  DropDown: 8a2116376c1981888557f72ec2ffc9a5e0e456ec
+  Moya: 2c16c3fe92eda302070213452281b59198f946d8
+  RxCocoa: e741b9749968e8a143e2b787f1dfbff2b63d0a5c
+  RxRelay: 89d54507f4fd4d969e6ec1d4bd7f3673640b4640
+  RxSwift: e2dc62b366a3adf6a0be44ba9f405efd4c94e0c4
+  Starscream: 4bb2f9942274833f7b4d296a55504dcfc7edb7b0
+
+PODFILE CHECKSUM: 4c2070c3f2dc7c175e3badf33a4a69668d39e85a
+
+COCOAPODS: 1.8.4
