@@ -14,6 +14,7 @@ class WebSocketDelegateProxy: DelegateProxy<WebSocket, WebSocketDelegate>, Deleg
     
     fileprivate let messageSubject = PublishSubject<String>()
     fileprivate let dataSubject = PublishSubject<Data>()
+    fileprivate let disconnectSubject = PublishSubject<Error?>()
     
     static func registerKnownImplementations() {
         self.register { WebSocketDelegateProxy(parentObject: $0, delegateProxy: WebSocketDelegateProxy.self) }
@@ -32,7 +33,7 @@ class WebSocketDelegateProxy: DelegateProxy<WebSocket, WebSocketDelegate>, Deleg
     }
     
     func websocketDidDisconnect(socket: WebSocketClient, error: Error?) {
-        //
+        disconnectSubject.onNext(error)
     }
     
     func websocketDidReceiveMessage(socket: WebSocketClient, text: String) {
@@ -58,6 +59,10 @@ extension Reactive where Base: WebSocket {
     
     var didReceiveData: Observable<Data> {
         return Observable.deferred({ self.delegate.dataSubject.asObservable() })
+    }
+    
+    var isDisconnected: Observable<Error?> {
+        return Observable.deferred({ self.delegate.disconnectSubject.asObservable() })
     }
     
 }

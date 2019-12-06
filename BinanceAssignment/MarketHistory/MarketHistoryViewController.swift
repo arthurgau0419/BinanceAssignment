@@ -11,6 +11,8 @@ import RxSwift
 import RxCocoa
 import Moya
 import Starscream
+import Reachability
+import RxReachability
 
 class MarketHistoryViewController: UIViewController {
     var symbol: String!
@@ -19,6 +21,8 @@ class MarketHistoryViewController: UIViewController {
     let backgroundScheduler = ConcurrentDispatchQueueScheduler(qos: .default)
     
     let provider = MoyaProvider<WebService>()
+    
+    lazy var reachability: Reachability = { Reachability()! }()
     
     lazy var decoder: JSONDecoder = {
         let decoder = JSONDecoder()
@@ -44,26 +48,42 @@ class MarketHistoryViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        websocket.connect()
+        try? reachability.startNotifier()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        websocket.disconnect()
+        reachability.stopNotifier()
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let webServiceExchangeInfo = provider.rx.request(.exchangeInfo(symbol: symbol))
+        reachability.rx.isConnected
+            .subscribe(onNext: { [unowned self] _ in
+                self.websocket.connect()
+            })
+            .disposed(by: disposeBag)
+        
+        reachability.rx.isDisconnected
+            .subscribe(onNext: { [unowned self] _ in
+                self.websocket.disconnect()
+            })
+            .disposed(by: disposeBag)
+        
+        let webServiceExchangeInfo = reachability.rx.isConnected
+            .flatMap { [unowned self] in
+                self.provider.rx.request(.exchangeInfo(symbol: self.symbol))
+            }
             .observeOn(backgroundScheduler)
             .map([ExchangeInfo].self, atKeyPath: "data", using: decoder)
             .asObservable()
             .flatMap { Observable.from(optional: $0.first) }
             .retry()
+            .take(1)
             .publish()
         
-        let webServiceTrades = rx.methodInvoked(#selector(viewWillAppear(_:)))
+        let webServiceTrades = reachability.rx.isConnected
             .flatMap { [unowned self] _ in
                 self.provider.rx.request(.aggTrades(symbol: self.symbol, limit: 80))
             }

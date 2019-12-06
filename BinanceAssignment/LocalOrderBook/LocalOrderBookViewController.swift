@@ -12,6 +12,8 @@ import RxCocoa
 import Moya
 import Starscream
 import DropDown
+import Reachability
+import RxReachability
 
 protocol CellModelType {
     var bidPriceLevel: Double? {get}
@@ -42,6 +44,8 @@ class LocalOrderBookViewController: UIViewController {
     
     let provider = MoyaProvider<WebService>()
     
+    lazy var reachability: Reachability = { Reachability()! }()
+    
     lazy var decoder: JSONDecoder = {
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .millisecondsSince1970
@@ -65,33 +69,48 @@ class LocalOrderBookViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        websocket.connect()
+        try? reachability.startNotifier()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        websocket.disconnect()
+        reachability.stopNotifier()
     }
         
     override func viewDidLoad() {
         super.viewDidLoad()
         setupDropDown()
         
-        let webServiceExchangeInfo = provider.rx.request(.exchangeInfo(symbol: symbol))
+        reachability.rx.isConnected
+            .subscribe(onNext: { [unowned self] _ in
+                self.websocket.connect()
+            })
+            .disposed(by: disposeBag)
+
+        reachability.rx.isDisconnected
+            .subscribe(onNext: { [unowned self] _ in
+                self.websocket.disconnect()
+            })
+            .disposed(by: disposeBag)
+        
+        let webServiceExchangeInfo = reachability.rx.isConnected
+            .flatMap { [unowned self] _ in
+                self.provider.rx.request(.exchangeInfo(symbol: self.symbol))
+            }
             .observeOn(backgroundScheduler)
             .map([ExchangeInfo].self, atKeyPath: "data", using: decoder)
             .asObservable()
             .flatMap { Observable.from(optional: $0.first) }
             .retry()
+            .take(1)
             .publish()
         
-        let webserviceDepth = rx.methodInvoked(#selector(viewWillAppear(_:)))
-            .flatMap { [unowned self] _ -> Observable<Depth> in
+        let webserviceDepth = self.reachability.rx.isConnected
+            .flatMap { [unowned self] _ in
                 self.provider.rx.request(.depth(symbol: self.symbol, limit: 1000))
-                    .observeOn(self.backgroundScheduler)
-                    .map(Depth.self)
-                    .asObservable()
             }
+            .observeOn(self.backgroundScheduler)
+            .map(Depth.self)
             .retry()
             .publish()
         

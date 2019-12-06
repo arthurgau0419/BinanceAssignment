@@ -20,6 +20,9 @@ def pods
   # DropDown
   pod 'DropDown'
 
+  # Reachability
+  pod 'RxReachability'
+
 end
 
 target 'BinanceAssignment' do
