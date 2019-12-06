@@ -45,6 +45,7 @@
 		8E71055E23996EC600E5BA35 /* NumberFormatter+Decimal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NumberFormatter+Decimal.swift"; sourceTree = "<group>"; };
 		8E7105602399733200E5BA35 /* CryptocurrencyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CryptocurrencyViewController.swift; sourceTree = "<group>"; };
 		8E710562239977B500E5BA35 /* InputSymbolViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputSymbolViewController.swift; sourceTree = "<group>"; };
+		8E7105FE239A030000E5BA35 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		8EAFF03123977EA400AC85C6 /* BinanceAssignment.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BinanceAssignment.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8EAFF03423977EA400AC85C6 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		8EAFF03923977EA400AC85C6 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -139,6 +140,7 @@
 		8EAFF02823977EA400AC85C6 = {
 			isa = PBXGroup;
 			children = (
+				8E7105FE239A030000E5BA35 /* README.md */,
 				8EAFF03323977EA400AC85C6 /* BinanceAssignment */,
 				8EAFF04823977EA500AC85C6 /* BinanceAssignmentTests */,
 				8EAFF03223977EA400AC85C6 /* Products */,
